@@ -52,7 +52,7 @@ class Conf:
 
     @simple_env_var.section
     class Senergy:
-        dt_plug = "___"
+        dt_plug = "urn:infai:ses:device-type:619c53c4-8f47-460f-b42d-50297a0f16a5"
         service_status = "status"
         service_energy = "energy"
         service_set_on_off = "set_on_off"

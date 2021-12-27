@@ -1,7 +1,8 @@
-FROM python:3-buster
+FROM python:3-slim-buster
 
 LABEL org.opencontainers.image.source https://github.com/SENERGY-Platform/mgw-kasa-dc
 
+RUN apt-get update && apt-get install git -y
 
 WORKDIR /usr/src/app
 

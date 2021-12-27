@@ -21,7 +21,11 @@ import mgw_dc
 from kasadc.services.energy import handle_energy
 from kasadc.services.reboot import handle_reboot
 from kasadc.services.set_led import handle_set_led
+from kasadc.services.set_led_off import handle_set_led_off
+from kasadc.services.set_led_on import handle_set_led_on
 from kasadc.services.set_name import handle_set_name
+from kasadc.services.set_off import handle_set_off
+from kasadc.services.set_on import handle_set_on
 from kasadc.services.set_on_off import handle_set_on_off
 from kasadc.services.status import handle_status
 from util import conf, get_logger, MQTTClient
@@ -35,7 +39,11 @@ command_handlers = {
     conf.Senergy.service_status: handle_status,
     conf.Senergy.service_energy: handle_energy,
     conf.Senergy.service_set_on_off: handle_set_on_off,
+    conf.Senergy.service_set_off: handle_set_off,
+    conf.Senergy.service_set_on: handle_set_on,
     conf.Senergy.service_set_led: handle_set_led,
+    conf.Senergy.service_set_led_on: handle_set_led_on,
+    conf.Senergy.service_set_led_off: handle_set_led_off,
     conf.Senergy.service_set_name: handle_set_name,
     conf.Senergy.service_reboot: handle_reboot,
 }

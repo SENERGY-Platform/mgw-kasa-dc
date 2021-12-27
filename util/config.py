@@ -42,6 +42,7 @@ class Conf:
         scan_delay = 1800
         timeout = 3
         broadcast = '255.255.255.255'
+        ip_list = ""
         device_id_prefix = "kasa-"
 
     @simple_env_var.section
@@ -56,7 +57,11 @@ class Conf:
         service_status = "status"
         service_energy = "energy"
         service_set_on_off = "set_on_off"
+        service_set_on = "set_on"
+        service_set_off = "set_off"
         service_set_led = "set_led"
+        service_set_led_on = "set_led_on"
+        service_set_led_off = "set_led_off"
         service_set_name = "set_name"
         service_reboot = "reboot"
         events_status_seconds = 30

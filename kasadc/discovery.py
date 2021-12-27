@@ -19,7 +19,7 @@ import threading
 import time
 from typing import Dict
 
-from kasa import Discover
+from kasa import Discover, SmartDeviceException
 from mgw_dc.dm import device_state
 
 from util import get_logger, conf, diff, init_logger, KasaDevice
@@ -41,6 +41,13 @@ class Discovery(threading.Thread):
         logger.info("Starting scan")
         devices: Dict[str, KasaDevice] = {}
         devs = await Discover.discover(target=conf.Discovery.broadcast, timeout=conf.Discovery.timeout)
+        for ip in conf.Discovery.ip_list.split(','):
+            if len(ip) == 0: continue
+            try:
+                dev = await Discover.discover_single(ip)
+                devs[ip] = dev
+            except SmartDeviceException as e:
+                logger.warning("Could not discover device with ip " + ip)
         for addr, dev in devs.items():
             if not dev.is_plug:
                 logger.warning("Found Kasa device that is not a plug. Device will be ignored, since not implemented")

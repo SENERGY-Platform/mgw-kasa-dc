@@ -15,10 +15,12 @@
 """
 
 import asyncio
+import ipaddress
 import threading
 import time
-from typing import Dict
+from typing import Dict, Tuple, List
 
+import kasa
 from kasa import Discover, SmartDeviceException
 from mgw_dc.dm import device_state
 
@@ -27,6 +29,7 @@ from util import get_logger, conf, diff, init_logger, KasaDevice
 __all__ = ("Discovery",)
 
 from util.device_manager import DeviceManager
+from util.scanner import Scanner
 
 logger = get_logger(__name__.split(".", 1)[-1])
 
@@ -40,8 +43,24 @@ class Discovery(threading.Thread):
     async def get_kasa_devices() -> Dict[str, KasaDevice]:
         logger.info("Starting scan")
         devices: Dict[str, KasaDevice] = {}
-        devs = await Discover.discover(target=conf.Discovery.broadcast, timeout=conf.Discovery.timeout)
-        for ip in conf.Discovery.ip_list.split(','):
+
+        subnet = ipaddress.ip_network(conf.Discovery.subnet)
+        host_port: List[Tuple[str, int]] = []
+        for host in subnet:
+            host_port.append((str(host), conf.Discovery.tcp_port))
+
+        host_port = Scanner.scan(host_port=host_port, num_workers=conf.Discovery.num_workers, timeout=conf.Discovery.timeout)
+
+        hosts = str(conf.Discovery.ip_list).split(',')
+        for host, _ in host_port:
+            hosts.append(host)
+
+        unique_hosts: Dict[str, any] = {}
+        for host in hosts:
+            unique_hosts[host] = {}
+
+        devs: Dict[str, kasa.SmartDevice] = {}
+        for ip in unique_hosts.keys():
             if len(ip) == 0: continue
             try:
                 dev = await Discover.discover_single(ip)

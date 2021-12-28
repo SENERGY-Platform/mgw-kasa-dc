@@ -40,8 +40,10 @@ class Conf:
     @simple_env_var.section
     class Discovery:
         scan_delay = 1800
-        timeout = 3
-        broadcast = '255.255.255.255'
+        timeout = 2
+        subnet = '10.42.0.0/24'
+        tcp_port = 9999
+        num_workers = 0
         ip_list = ""
         device_id_prefix = "kasa-"
 
@@ -64,8 +66,8 @@ class Conf:
         service_set_led_off = "set_led_off"
         service_set_name = "set_name"
         service_reboot = "reboot"
-        events_status_seconds = 30
-        events_energy_seconds = 600
+        events_status_seconds = 600
+        events_energy_seconds = 30
 
 conf = Conf()
 

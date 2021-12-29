@@ -21,9 +21,11 @@ from kasa import SmartDevice
 
 __all__ = ("KasaDevice",)
 
+
 class KasaDevice(mgw_dc.dm.Device):
-    def __init__(self, id: str, name: str, type: str, kasa_device: SmartDevice, state: typing.Optional[str] = None):
-        super().__init__(id, name, type, state)
+    def __init__(self, id: str, name: str, type: str, kasa_device: SmartDevice, state: typing.Optional[str] = None,
+                 attributes=None):
+        super().__init__(id, name, type, state, attributes)
         self._kasa_device = kasa_device
 
     def get_kasa(self) -> SmartDevice:

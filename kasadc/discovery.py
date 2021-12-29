@@ -49,7 +49,8 @@ class Discovery(threading.Thread):
         for host in subnet:
             host_port.append((str(host), conf.Discovery.tcp_port))
 
-        host_port = Scanner.scan(host_port=host_port, num_workers=conf.Discovery.num_workers, timeout=conf.Discovery.timeout)
+        host_port = Scanner.scan(host_port=host_port, num_workers=conf.Discovery.num_workers,
+                                 timeout=conf.Discovery.timeout)
 
         hosts = str(conf.Discovery.ip_list).split(',')
         for host, _ in host_port:
@@ -75,7 +76,18 @@ class Discovery(threading.Thread):
             logger.info("Discovered '" + dev.alias + "' at " + dev.host)
             id = conf.Discovery.device_id_prefix + dev.device_id
             devices[id] = KasaDevice(id=id, name=dev.alias, type=conf.Senergy.dt_plug, state=device_state.online,
-                                     kasa_device=dev)
+                                     kasa_device=dev, attributes=[
+                    {"key": "network/mac", "value": dev.mac},
+                    {"key": "network/ip", "value": dev.host},
+                    {"key": "kasa/sw_ver", "value": dev.hw_info["sw_ver"]},
+                    {"key": "kasa/hw_ver", "value": dev.hw_info["hw_ver"]},
+                    {"key": "kasa/hw_id", "value": dev.hw_info["hwId"]},
+                    {"key": "kasa/fw_id", "value": dev.hw_info["fwId"]},
+                    {"key": "kasa/oem_id", "value": dev.hw_info["oemId"]},
+                    {"key": "kasa/model", "value": dev.model},
+                    {"key": "kasa/location", "value": dev.location},
+                ])
+
         logger.info("Discovered " + str(len(devices)) + " devices")
         return devices
 

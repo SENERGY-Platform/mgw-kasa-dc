@@ -85,7 +85,8 @@ class Discovery(threading.Thread):
                     {"key": "kasa/fw_id", "value": dev.hw_info["fwId"]},
                     {"key": "kasa/oem_id", "value": dev.hw_info["oemId"]},
                     {"key": "kasa/model", "value": dev.model},
-                    {"key": "kasa/location", "value": dev.location},
+                    {"key": "location/latitude", "value": str(dev.location["latitude"])},
+                    {"key": "location/longitude", "value": str(dev.location["longitude"])},
                 ])
 
         logger.info("Discovered " + str(len(devices)) + " devices")

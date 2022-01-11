@@ -34,7 +34,6 @@ async def handle_status(device: KasaDevice, *args, **kwargs) -> typing.Dict:
         "sw_ver": k.hw_info["sw_ver"],
         "hw_ver": k.hw_info["hw_ver"],
         "hw_id": k.hw_info["hwId"],
-        "fw_id": k.hw_info["fwId"],
         "oem_id": k.hw_info["oemId"],
         "model": k.model,
         "rssi": k.rssi,
@@ -42,4 +41,6 @@ async def handle_status(device: KasaDevice, *args, **kwargs) -> typing.Dict:
         "led_enabled": k.led,
         "time": str(time),
     }
+    if "fwId" in k.hw_info:
+        resp["fw_id"] = k.hw_info["fwId"]
     return resp

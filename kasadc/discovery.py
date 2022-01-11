@@ -75,19 +75,21 @@ class Discovery(threading.Thread):
                 continue
             logger.info("Discovered '" + dev.alias + "' at " + dev.host)
             id = conf.Discovery.device_id_prefix + dev.device_id
+            attributes = [
+                {"key": "network/mac", "value": dev.mac},
+                {"key": "network/ip", "value": dev.host},
+                {"key": "kasa/sw_ver", "value": dev.hw_info["sw_ver"]},
+                {"key": "kasa/hw_ver", "value": dev.hw_info["hw_ver"]},
+                {"key": "kasa/hw_id", "value": dev.hw_info["hwId"]},
+                {"key": "kasa/oem_id", "value": dev.hw_info["oemId"]},
+                {"key": "kasa/model", "value": dev.model},
+                {"key": "location/latitude", "value": str(dev.location["latitude"])},
+                {"key": "location/longitude", "value": str(dev.location["longitude"])},
+            ]
+            if "fwId" in dev.hw_info:
+                attributes.append({"key": "kasa/fw_id", "value": dev.hw_info["fwId"]})
             devices[id] = KasaDevice(id=id, name=dev.alias, type=conf.Senergy.dt_plug, state=device_state.online,
-                                     kasa_device=dev, attributes=[
-                    {"key": "network/mac", "value": dev.mac},
-                    {"key": "network/ip", "value": dev.host},
-                    {"key": "kasa/sw_ver", "value": dev.hw_info["sw_ver"]},
-                    {"key": "kasa/hw_ver", "value": dev.hw_info["hw_ver"]},
-                    {"key": "kasa/hw_id", "value": dev.hw_info["hwId"]},
-                    {"key": "kasa/fw_id", "value": dev.hw_info["fwId"]},
-                    {"key": "kasa/oem_id", "value": dev.hw_info["oemId"]},
-                    {"key": "kasa/model", "value": dev.model},
-                    {"key": "location/latitude", "value": str(dev.location["latitude"])},
-                    {"key": "location/longitude", "value": str(dev.location["longitude"])},
-                ])
+                                     kasa_device=dev, attributes=attributes)
 
         logger.info("Discovered " + str(len(devices)) + " devices")
         return devices

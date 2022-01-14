@@ -115,12 +115,15 @@ class Discovery(threading.Thread):
 
     def run(self) -> None:
         logger.info("starting {} ...".format(self.name))
+        asyncio.run(self.discovery_loop())
+
+    async def discovery_loop(self):
+        await self._refresh_devices()
         last_discovery = time.time()
-        asyncio.run(self._refresh_devices())
         while True:
             if time.time() - last_discovery > conf.Discovery.scan_delay:
                 last_discovery = time.time()
-                self._refresh_devices()
+                await self._refresh_devices()
             time.sleep(conf.Discovery.scan_delay / 100)  # at most 1 % too late
 
 

@@ -16,8 +16,10 @@
 import typing
 
 import kasa
+import rfc3339
 
 from util import KasaDevice
+from util.timezones import localize_time
 
 
 async def handle_status(device: KasaDevice, *args, **kwargs) -> typing.Dict:
@@ -27,6 +29,9 @@ async def handle_status(device: KasaDevice, *args, **kwargs) -> typing.Dict:
 
     await device.get_kasa().update()
     time = await k.get_time()
+    if time is not None:
+        tz = await k.get_timezone()
+        time = localize_time(time, tz['index'])
 
     resp = {
         "mac": k.mac,
@@ -39,7 +44,7 @@ async def handle_status(device: KasaDevice, *args, **kwargs) -> typing.Dict:
         "rssi": k.rssi,
         "location": k.location,
         "led_enabled": k.led,
-        "time": str(time),
+        "time": rfc3339.format(time, utc=True)
     }
     if "fwId" in k.hw_info:
         resp["fw_id"] = k.hw_info["fwId"]

@@ -15,7 +15,10 @@
 """
 import typing
 
+import rfc3339
+
 from util import KasaDevice
+from util.timezones import localize_time
 
 
 async def handle_energy(device: KasaDevice, *args, **kwargs) -> typing.Dict:
@@ -23,6 +26,9 @@ async def handle_energy(device: KasaDevice, *args, **kwargs) -> typing.Dict:
 
     await kasa.update()
     time = await kasa.get_time()
+    if time is not None:
+        tz = await kasa.get_timezone()
+        time = localize_time(time, tz['index'])
     resp = {
         "on": kasa.is_on,
         "current": kasa.emeter_realtime.current,
@@ -31,6 +37,6 @@ async def handle_energy(device: KasaDevice, *args, **kwargs) -> typing.Dict:
         "voltage": kasa.emeter_realtime.voltage,
         "today": kasa.emeter_today,
         "month": kasa.emeter_this_month,
-        "time": str(time)
+        "time": rfc3339.format(time, utc=True)
     }
     return resp

@@ -14,15 +14,17 @@
    limitations under the License.
 """
 
-__all__ = ("MQTTClient", )
+__all__ = ("MQTTClient",)
 
-
-from .logger import get_logger
-from .config import conf
-import paho.mqtt.client
 import time
-import mgw_dc
 
+import mgw_dc
+import paho.mqtt.client
+
+from paho.mqtt.client import MQTT_ERR_SUCCESS, MQTT_ERR_NO_CONN
+
+from .config import conf
+from .logger import get_logger
 
 logger = get_logger(__name__.split(".", 1)[-1])
 
@@ -61,16 +63,16 @@ class MQTTClient:
         self.on_message(message.topic, message.payload)
 
     def start(self):
-        while True:
+        code = MQTT_ERR_NO_CONN
+        while code != MQTT_ERR_SUCCESS:
             try:
-                self.__client.connect(conf.MsgBroker.host, conf.MsgBroker.port, keepalive=conf.Client.keep_alive)
-                self.__client.loop_forever()
-                break
+                code = self.__client.connect(conf.MsgBroker.host, conf.MsgBroker.port, keepalive=conf.Client.keep_alive)
             except Exception as ex:
                 logger.error(
-                    "could not connect to '{}' on '{}' - {}".format(conf.MsgBroker.host, conf.MsgBroker.port, ex)
+                    "could not connect to '{}' on '{}' - {}".format(conf.MsgBroker.host, conf.MsgBroker.port, str(ex))
                 )
                 time.sleep(5)
+        self.__client.loop_forever()
 
     def subscribe(self, topic: str, qos: int) -> None:
         res = self.__client.subscribe(topic=topic, qos=qos)
